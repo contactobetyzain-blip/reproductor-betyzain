@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reproductor BETYZAIN</title>
+<style>
+  body{margin:0;background:transparent;font-family:'Segoe UI',Arial,sans-serif;}
+  .player{max-width:720px;margin:0 auto;padding:28px;background:#fff;border-radius:24px;box-shadow:0 12px 30px rgba(0,0,0,.12);box-sizing:border-box;}
+  .wrap{display:flex;align-items:center;gap:26px;}
+  .speaker{width:92px;height:92px;background:#69B9E9;border-radius:50%;display:flex;justify-content:center;align-items:center;flex-shrink:0;}
+  .content{flex:1;min-width:0;}
+  .label{color:#69B9E9;font-size:16px;font-weight:700;}
+  .title{font-size:34px;font-weight:700;color:#333;margin:4px 0 20px;}
+  .bar{display:flex;align-items:center;gap:12px;color:#333;font-size:18px;}
+  input[type=range]{flex:1;accent-color:#69B9E9;cursor:pointer;}
+  .controls{display:flex;justify-content:center;align-items:center;gap:52px;margin-top:26px;}
+  button{border:none;background:none;cursor:pointer;color:#69B9E9;font-size:30px;line-height:1;}
+  .main{width:72px;height:72px;border-radius:50%;background:#69B9E9;color:#fff;font-size:34px;display:flex;align-items:center;justify-content:center;}
+  @media(max-width:560px){.player{padding:22px;border-radius:20px}.wrap{gap:16px}.speaker{width:72px;height:72px}.title{font-size:25px}.label{font-size:14px}.controls{gap:32px}.main{width:62px;height:62px}}
+</style>
+</head>
+<body>
+<div class="player">
+  <div class="wrap">
+    <div class="speaker" aria-hidden="true">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+        <path d="M3 9v6h4l5 4V5L7 9H3z"></path>
+        <path d="M15.5 8.5a5 5 0 010 7" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+        <path d="M18 6a8 8 0 010 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+    </div>
+    <div class="content">
+      <div class="label">Escucha mi mensaje</div>
+      <div class="title">Mensaje de bienvenida</div>
+      <audio id="audio" preload="metadata">
+        <source src="https://res.cloudinary.com/z5vgtrud/video/upload/v1783171308/mensaje-bienvenida-bety_xs4ii3.mp3" type="audio/mpeg">
+      </audio>
+      <div class="bar">
+        <span id="current">0:00</span>
+        <input id="progress" type="range" min="0" value="0" step="1" />
+        <span id="duration">0:00</span>
+      </div>
+      <div class="controls">
+        <button id="back" aria-label="Retroceder 10 segundos">⏮</button>
+        <button id="play" class="main" aria-label="Reproducir">▶</button>
+        <button id="forward" aria-label="Avanzar 10 segundos">⏭</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const audio=document.getElementById('audio');
+const play=document.getElementById('play');
+const progress=document.getElementById('progress');
+const current=document.getElementById('current');
+const duration=document.getElementById('duration');
+const back=document.getElementById('back');
+const forward=document.getElementById('forward');
+function format(t){ if(!isFinite(t)) return '0:00'; const m=Math.floor(t/60); const s=Math.floor(t%60); return m+':' + (s<10?'0':'')+s; }
+audio.addEventListener('loadedmetadata',()=>{ progress.max=Math.floor(audio.duration); duration.textContent=format(audio.duration); });
+audio.addEventListener('timeupdate',()=>{ progress.value=Math.floor(audio.currentTime); current.textContent=format(audio.currentTime); });
+progress.addEventListener('input',()=>{ audio.currentTime=progress.value; });
+play.addEventListener('click',()=>{ if(audio.paused){audio.play(); play.textContent='❚❚'; play.setAttribute('aria-label','Pausar');} else {audio.pause(); play.textContent='▶'; play.setAttribute('aria-label','Reproducir');} });
+back.addEventListener('click',()=>{ audio.currentTime=Math.max(0,audio.currentTime-10); });
+forward.addEventListener('click',()=>{ audio.currentTime=Math.min(audio.duration || 0,audio.currentTime+10); });
+audio.addEventListener('ended',()=>{ play.textContent='▶'; play.setAttribute('aria-label','Reproducir'); });
+</script>
+</body>
+</html>
